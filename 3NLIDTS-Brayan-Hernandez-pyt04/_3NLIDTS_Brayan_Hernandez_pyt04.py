@@ -10,9 +10,6 @@ def limpiar_campos():
     tbTelefono.delete(0, tk.END)
     var_genero.set(0)
 
-def borrar_fun():
-    limpiar_campos()
-
 def guardar_valores():
     nombres = tbNombre.get()
     apellidos = tbApellidos.get()
@@ -20,70 +17,81 @@ def guardar_valores():
     estatura = tbEstatura.get()
     telefono = tbTelefono.get()
 
-    if var_genero.get() == 1:
-        genero = "Masculino"
-    elif var_genero.get() == 2:
-        genero = "Femenino"
-    else:
-        genero = "No especificado"
+    genero = {
+        1: "Masculino",
+        2: "Femenino"
+    }.get(var_genero.get(), "No especificado")
 
     datos = (
         f"Nombres: {nombres}\n"
         f"Apellidos: {apellidos}\n"
         f"Edad: {edad}\n"
         f"Estatura: {estatura}\n"
-        f"Telefono: {telefono}\n"
-        f"Genero: {genero}"
+        f"Teléfono: {telefono}\n"
+        f"Género: {genero}"
     )
 
-    with open("302024Datos.txt", "a") as archivo:
+    with open("302024Datos.txt", "a", encoding="utf-8") as archivo:
         archivo.write(datos + "\n\n")
 
     messagebox.showinfo("Guardado", "Los datos han sido guardados exitosamente.\n\n" + datos)
     limpiar_campos()
 
 ventana = tk.Tk()
-ventana.geometry("520x580")
 ventana.title("Formulario de Datos Personales")
 
 var_genero = tk.IntVar()
 
-lbNombre = tk.Label(ventana, text="Nombres:")
-lbNombre.pack()
-tbNombre = tk.Entry(ventana)
-tbNombre.pack()
+# Estilo general
+fuente_label = ("Segoe UI", 11)
+fuente_titulo = ("Segoe UI", 16, "bold")
+fuente_entry = ("Segoe UI", 11)
 
-lbApellidos = tk.Label(ventana, text="Apellidos:")
-lbApellidos.pack()
-tbApellidos = tk.Entry(ventana)
-tbApellidos.pack()
+# Título
+titulo = tk.Label(ventana, text="Formulario de Datos Personales", font=fuente_titulo)
+titulo.grid(row=0, column=0, columnspan=2, pady=20)
 
-lbTelefono = tk.Label(ventana, text="Telefono:")
-lbTelefono.pack()
-tbTelefono = tk.Entry(ventana)
-tbTelefono.pack()
+# Función para crear campos
+def crear_label_entry(fila, texto):
+    label = tk.Label(ventana, text=texto, font=fuente_label)
+    label.grid(row=fila, column=0, sticky="e", padx=10, pady=5)
+    entry = tk.Entry(ventana, font=fuente_entry, width=30)
+    entry.grid(row=fila, column=1, padx=10, pady=5)
+    return entry
 
-lbEdad = tk.Label(ventana, text="Edad:")
-lbEdad.pack()
-tbEdad = tk.Entry(ventana)
-tbEdad.pack()
+# Crear entradas
+tbNombre = crear_label_entry(1, "Nombres:")
+tbApellidos = crear_label_entry(2, "Apellidos:")
+tbTelefono = crear_label_entry(3, "Teléfono:")
+tbEdad = crear_label_entry(4, "Edad:")
+tbEstatura = crear_label_entry(5, "Estatura (m):")
 
-lbEstatura = tk.Label(ventana, text="Estatura (m):")
-lbEstatura.pack()
-tbEstatura = tk.Entry(ventana)
-tbEstatura.pack()
+# Género
+lbGenero = tk.Label(ventana, text="Género:", font=fuente_label)
+lbGenero.grid(row=6, column=0, sticky="e", padx=10, pady=5)
 
-lbGenero = tk.Label(ventana, text="Genero:")
-lbGenero.pack()
-rbHombre = tk.Radiobutton(ventana, text="Masculino", variable=var_genero, value=1)
-rbHombre.pack()
-rbMujer = tk.Radiobutton(ventana, text="Femenino", variable=var_genero, value=2)
-rbMujer.pack()
+frame_genero = tk.Frame(ventana)
+frame_genero.grid(row=6, column=1, sticky="w")
 
-btnBorrar = tk.Button(ventana, text="Borrar valores", command=borrar_fun)
-btnBorrar.pack()
+rbHombre = tk.Radiobutton(frame_genero, text="Masculino", variable=var_genero, value=1, font=fuente_label)
+rbHombre.pack(side="left", padx=5)
+rbMujer = tk.Radiobutton(frame_genero, text="Femenino", variable=var_genero, value=2, font=fuente_label)
+rbMujer.pack(side="left", padx=5)
 
-btnGuardar = tk.Button(ventana, text="Guardar valores", command=guardar_valores)
-btnGuardar.pack()
+# Botones
+estilo_btn = {"font": ("Segoe UI", 11, "bold"), "width": 18}
+
+btnBorrar = tk.Button(ventana, text="Borrar valores", command=limpiar_campos, **estilo_btn)
+btnBorrar.grid(row=7, column=0, pady=25)
+
+btnGuardar = tk.Button(ventana, text="Guardar valores", command=guardar_valores, **estilo_btn)
+btnGuardar.grid(row=7, column=1)
+
+# Botón para cambiar tema
+btnTema = tk.Button(ventana, text="Cambiar a Modo Oscuro", command=cambiar_tema, **estilo_btn)
+btnTema.grid(row=8, column=0, columnspan=2, pady=10)
+
+# Aplicar tema por primera vez
+aplicar_tema()
 
 ventana.mainloop()
