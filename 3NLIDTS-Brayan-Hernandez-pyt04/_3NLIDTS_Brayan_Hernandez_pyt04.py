@@ -1,7 +1,38 @@
 import tkinter as tk
 from tkinter import messagebox
+import os
 
-# Funciones
+# ---------- Configuracion de colores ----------
+modo_oscuro = False
+
+color_claro = {
+    "bg": "#f0f4f7",
+    "fg": "#2c3e50",
+    "entry_bg": "#ffffff",
+    "entry_fg": "#000000",
+    "btn_bg": "#3498db",
+    "btn_fg": "#ffffff"
+}
+
+color_oscuro = {
+    "bg": "#1e1e1e",
+    "fg": "#dcdcdc",
+    "entry_bg": "#2b2b2b",
+    "entry_fg": "#ffffff",
+    "btn_bg": "#3a8fd4",
+    "btn_fg": "#ffffff"
+}
+
+
+# ---------- Funciones ----------
+def centrar_ventana(win, ancho, alto):
+    screen_width = win.winfo_screenwidth()
+    screen_height = win.winfo_screenheight()
+    x = (screen_width - ancho) // 2
+    y = (screen_height - alto) // 2
+    win.geometry(f"{ancho}x{alto}+{x}+{y}")
+
+
 def limpiar_campos():
     tbNombre.delete(0, tk.END)
     tbApellidos.delete(0, tk.END)
@@ -10,22 +41,32 @@ def limpiar_campos():
     tbTelefono.delete(0, tk.END)
     var_genero.set(0)
 
-def borrar_fun():
-    limpiar_campos()
+
+def campos_vacios():
+    return (
+        not tbNombre.get().strip() or
+        not tbApellidos.get().strip() or
+        not tbEdad.get().strip() or
+        not tbEstatura.get().strip() or
+        not tbTelefono.get().strip()
+    )
+
 
 def guardar_valores():
+    if campos_vacios():
+        messagebox.showwarning("Campos vacios", "Por favor complete todos los campos antes de guardar.")
+        return
+
     nombres = tbNombre.get()
     apellidos = tbApellidos.get()
     edad = tbEdad.get()
     estatura = tbEstatura.get()
     telefono = tbTelefono.get()
 
-    if var_genero.get() == 1:
-        genero = "Masculino"
-    elif var_genero.get() == 2:
-        genero = "Femenino"
-    else:
-        genero = "No especificado"
+    genero = {
+        1: "Masculino",
+        2: "Femenino"
+    }.get(var_genero.get(), "No especificado")
 
     datos = (
         f"Nombres: {nombres}\n"
@@ -36,54 +77,111 @@ def guardar_valores():
         f"Genero: {genero}"
     )
 
-    with open("302024Datos.txt", "a") as archivo:
-        archivo.write(datos + "\n\n")
+    confirmar = messagebox.askyesno("Confirmar", "Desea guardar los siguientes datos?\n\n" + datos)
 
-    messagebox.showinfo("Guardado", "Los datos han sido guardados exitosamente.\n\n" + datos)
-    limpiar_campos()
+    if confirmar:
+        with open("302024Datos.txt", "a", encoding="utf-8") as archivo:
+            archivo.write(datos + "\n\n")
 
+        messagebox.showinfo("Guardado", "Datos guardados correctamente.")
+        limpiar_campos()
+
+
+def mostrar_datos_guardados():
+    if not os.path.exists("302024Datos.txt"):
+        messagebox.showinfo("Sin datos", "Aun no hay datos guardados.")
+        return
+
+    with open("302024Datos.txt", "r", encoding="utf-8") as archivo:
+        contenido = archivo.read().strip()
+
+    if contenido:
+        messagebox.showinfo("Datos guardados", contenido)
+    else:
+        messagebox.showinfo("Sin datos", "Aun no hay datos guardados.")
+
+
+def cambiar_tema():
+    global modo_oscuro
+    modo_oscuro = not modo_oscuro
+    aplicar_tema()
+    btnTema.config(text="Modo Claro" if modo_oscuro else "Modo Oscuro")
+
+def aplicar_tema():
+    colores = color_oscuro if modo_oscuro else color_claro
+    ventana.configure(bg=colores["bg"])
+
+    for widget in ventana.winfo_children():
+        # Aplica bg y fg solo a widgets que lo soportan
+        if isinstance(widget, (tk.Label, tk.Radiobutton)):
+            widget.configure(bg=colores["bg"], fg=colores["fg"])
+        elif isinstance(widget, tk.Entry):
+            widget.configure(bg=colores["entry_bg"], fg=colores["entry_fg"], insertbackground=colores["entry_fg"])
+        elif isinstance(widget, tk.Button):
+            widget.configure(bg=colores["btn_bg"], fg=colores["btn_fg"], activebackground=colores["btn_bg"])
+        elif isinstance(widget, tk.Frame):
+            widget.configure(bg=colores["bg"])  # Solo cambia el fondo
+
+
+# ---------- Interfaz ----------
 ventana = tk.Tk()
-ventana.geometry("520x580")
 ventana.title("Formulario de Datos Personales")
+centrar_ventana(ventana, 500, 620)
 
 var_genero = tk.IntVar()
 
-lbNombre = tk.Label(ventana, text="Nombres:")
-lbNombre.pack()
-tbNombre = tk.Entry(ventana)
-tbNombre.pack()
+fuente_label = ("Segoe UI", 11)
+fuente_titulo = ("Segoe UI", 16, "bold")
+fuente_entry = ("Segoe UI", 11)
 
-lbApellidos = tk.Label(ventana, text="Apellidos:")
-lbApellidos.pack()
-tbApellidos = tk.Entry(ventana)
-tbApellidos.pack()
+# Titulo
+titulo = tk.Label(ventana, text="Formulario de Datos Personales", font=fuente_titulo)
+titulo.grid(row=0, column=0, columnspan=2, pady=20)
 
-lbTelefono = tk.Label(ventana, text="Telefono:")
-lbTelefono.pack()
-tbTelefono = tk.Entry(ventana)
-tbTelefono.pack()
 
-lbEdad = tk.Label(ventana, text="Edad:")
-lbEdad.pack()
-tbEdad = tk.Entry(ventana)
-tbEdad.pack()
+def crear_label_entry(fila, texto):
+    label = tk.Label(ventana, text=texto, font=fuente_label)
+    label.grid(row=fila, column=0, sticky="e", padx=10, pady=5)
+    entry = tk.Entry(ventana, font=fuente_entry, width=30)
+    entry.grid(row=fila, column=1, padx=10, pady=5)
+    return entry
 
-lbEstatura = tk.Label(ventana, text="Estatura (m):")
-lbEstatura.pack()
-tbEstatura = tk.Entry(ventana)
-tbEstatura.pack()
 
-lbGenero = tk.Label(ventana, text="Genero:")
-lbGenero.pack()
-rbHombre = tk.Radiobutton(ventana, text="Masculino", variable=var_genero, value=1)
-rbHombre.pack()
-rbMujer = tk.Radiobutton(ventana, text="Femenino", variable=var_genero, value=2)
-rbMujer.pack()
+# Entradas
+tbNombre = crear_label_entry(1, "Nombres:")
+tbApellidos = crear_label_entry(2, "Apellidos:")
+tbTelefono = crear_label_entry(3, "Telefono:")
+tbEdad = crear_label_entry(4, "Edad:")
+tbEstatura = crear_label_entry(5, "Estatura (m):")
 
-btnBorrar = tk.Button(ventana, text="Borrar valores", command=borrar_fun)
-btnBorrar.pack()
+# Genero
+lbGenero = tk.Label(ventana, text="Genero:", font=fuente_label)
+lbGenero.grid(row=6, column=0, sticky="e", padx=10, pady=5)
 
-btnGuardar = tk.Button(ventana, text="Guardar valores", command=guardar_valores)
-btnGuardar.pack()
+frame_genero = tk.Frame(ventana)
+frame_genero.grid(row=6, column=1, sticky="w")
+
+rbHombre = tk.Radiobutton(frame_genero, text="Masculino", variable=var_genero, value=1, font=fuente_label)
+rbHombre.pack(side="left", padx=5)
+rbMujer = tk.Radiobutton(frame_genero, text="Femenino", variable=var_genero, value=2, font=fuente_label)
+rbMujer.pack(side="left", padx=5)
+
+# Botones
+estilo_btn = {"font": ("Segoe UI", 11, "bold"), "width": 18}
+
+btnBorrar = tk.Button(ventana, text="Borrar Valores", command=limpiar_campos, **estilo_btn)
+btnBorrar.grid(row=7, column=0, pady=20)
+
+btnGuardar = tk.Button(ventana, text="Guardar Valores", command=guardar_valores, **estilo_btn)
+btnGuardar.grid(row=7, column=1)
+
+btnTema = tk.Button(ventana, text="Modo Oscuro", command=cambiar_tema, **estilo_btn)
+btnTema.grid(row=8, column=0, columnspan=2, pady=5)
+
+btnMostrar = tk.Button(ventana, text="Mostrar Datos Guardados", command=mostrar_datos_guardados, **estilo_btn)
+btnMostrar.grid(row=9, column=0, columnspan=2, pady=10)
+
+# Aplicar tema inicial
+aplicar_tema()
 
 ventana.mainloop()
