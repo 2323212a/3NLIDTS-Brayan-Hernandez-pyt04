@@ -10,8 +10,11 @@ def limpiar_campos():
     tbTelefono.delete(0, tk.END)
     var_genero.set(0)
 
-def borrar_fun():
-    limpiar_campos()
+    nombres = entry_nombres.get()  
+    apellidos = entry_apellidos.get()
+    edad = entry_edad.get()
+    estatura = entry_estatura.get()
+    telefono = entry_telefono.get()
 
 def guardar_valores():
     nombres = tbNombre.get()
@@ -41,6 +44,25 @@ def guardar_valores():
 
     messagebox.showinfo("Guardado", "Los datos han sido guardados exitosamente.\n\n" + datos)
     limpiar_campos()
+    else:
+        messagebox.showerror("Error", "Por favor, ingrese datos validos en todos los campos.")
+
+
+def limpiar_campos():
+    entry_nombres.delete(0, tk.END)
+    entry_apellidos.delete(0, tk.END)
+    entry_edad.delete(0, tk.END)
+    entry_estatura.delete(0, tk.END)
+    entry_telefono.delete(0, tk.END)
+    var_genero.set(0)
+
+
+def es_entero_valido(valor):
+    try:
+        int(valor)
+        return True
+    except ValueError:
+        return False
 
 ventana = tk.Tk()
 ventana.geometry("520x580")
@@ -83,7 +105,7 @@ rbMujer.pack()
 btnBorrar = tk.Button(ventana, text="Borrar valores", command=borrar_fun)
 btnBorrar.pack()
 
-btnGuardar = tk.Button(ventana, text="Guardar valores", command=guardar_valores)
+btnGuardar = tk.Button(ventana, "Guardar valores", command=guardar_valores)
 btnGuardar.pack()
 
 ventana.mainloop()
