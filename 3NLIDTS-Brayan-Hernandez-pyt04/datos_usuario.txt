@@ -1,0 +1,7 @@
+Nombres: Brayan
+Apellidos: Hernandez
+Edad: 20 años
+Estatura: 1.70 cm
+Telefono: 9611623733
+Genero: Masculino
+

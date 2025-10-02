@@ -19,7 +19,7 @@ def guardar_datos():
     if (es_entero_valido(edad) and es_decimal_valido(estatura) and
         es_entero_valido_de_10_digitos(telefono) and es_texto_valido(nombres) and es_texto_valido(apellidos)):
 
-        datos = f"Nombres: {nombres}\nApellidos: {apellidos}\nEdad: {edad} a�os\nEstatura: {estatura} cm\nTelefono: {telefono}\nGenero: {genero}"
+        datos = f"Nombres: {nombres}\nApellidos: {apellidos}\nEdad: {edad} años\nEstatura: {estatura} cm\nTelefono: {telefono}\nGenero: {genero}"
 
         with open("datos_usuario.txt", "a") as archivo:
             archivo.write(datos + "\n\n")
