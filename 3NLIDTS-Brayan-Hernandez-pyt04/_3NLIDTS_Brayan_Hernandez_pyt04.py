@@ -1,6 +1,31 @@
+from sqlite3 import Cursor
 import tkinter as tk
 from tkinter import messagebox
 import re
+import mysql.connector
+
+def insertarRegistro(nombre,apellido,telefono,estatura,edad,genero):
+    try:
+        conexion=mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="1234",
+            database="formulario3n",
+            port="3306"
+            )
+        Cursor= conexion.cursor()
+        
+        stringQuery="INSERT INTO usuarios(Nombre, Apellidos, Telefono, Estatura, Edad, Genero) Values (%s,%s,%s,%s,%s,%s)"
+        valores= nombre, apellido, telefono, estatura, edad, genero
+        Cursor.execute(stringQuery,valores)
+        conexion.commit()
+        Cursor.close()
+        conexion.close()
+        messagebox.showinfo("inserccion correcta","datos introducidos correctamente")
+        print ("1")
+    except mysql.connector.Error as err:
+        messagebox.showerror("error en la conecxion",f"error al insertar datos:{err}")
+
 
 def guardar_datos():
 
@@ -23,6 +48,9 @@ def guardar_datos():
 
         with open("datos_usuario.txt", "a") as archivo:
             archivo.write(datos + "\n\n")
+
+            insertarRegistro(nombres,apellidos,telefono,estatura, edad, genero)
+
         messagebox.showinfo("Informacion", "Datos guardados con exito: \n\n" + datos)
 
         limpiar_campos()

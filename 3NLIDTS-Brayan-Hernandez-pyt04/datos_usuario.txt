@@ -5,3 +5,24 @@ Estatura: 1.70 cm
 Telefono: 9611623733
 Genero: Masculino
 
+Nombres: brayan
+Apellidos: hernandez
+Edad: 20 años
+Estatura: 1.70 cm
+Telefono: 9612436576
+Genero: Masculino
+
+Nombres: juan
+Apellidos: escutia
+Edad: 22 años
+Estatura: 1.65 cm
+Telefono: 9825348787
+Genero: Masculino
+
+Nombres: alan
+Apellidos: hernandez
+Edad: 18 años
+Estatura: 1.68 cm
+Telefono: 9612658765
+Genero: Masculino
+
